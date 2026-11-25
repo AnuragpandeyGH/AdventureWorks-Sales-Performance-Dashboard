@@ -1,0 +1,125 @@
+table 'Measures (2)'
+	lineageTag: c9fb7536-5408-4460-8b6d-e543f6755e62
+
+	measure 'Total Orders' = SUM('sales data'[OrderQuantity])
+		formatString: 0
+		lineageTag: 4a6f17a9-2757-4809-a2f6-bad4a460d977
+
+	measure Customers = DISTINCTCOUNT('sales data'[CustomerKey])
+		formatString: 0
+		lineageTag: 4829d844-ec93-4782-9dbb-2de37e3e514e
+
+	measure 'Total Returns' = sum('Returns Data'[ReturnQuantity])
+		formatString: 0
+		lineageTag: 9abb1942-fd2f-4f1e-8267-03ea0a17d7d0
+
+	measure 'Return Rate' = DIVIDE([Total Returns],[Total Orders])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 7fa845c6-efd3-4ed3-b8b3-ccbd856e144c
+
+	measure 'Bulk order' = CALCULATE([Total Orders],'sales data'[OrderQuantity]>1)
+		formatString: 0
+		lineageTag: 81d64de9-6fe8-4ddb-86c8-cce5e753a2bc
+
+	measure 'Bike returns' = CALCULATE([Total Returns],'Product Categories Lookup'[CategoryName]=="Bikes")
+		formatString: 0
+		lineageTag: becc66c6-9f02-4de4-9393-8b4ce7491c7a
+
+	measure 'Total Bikes sale' = CALCULATE([Total Orders],'Product Categories Lookup'[CategoryName]=="Bikes")
+		formatString: 0
+		lineageTag: ba7b5a38-f09a-437c-bea9-8df05c73adc4
+
+	measure 'Bike return rate' = DIVIDE([Bike returns],[Total Bikes sale])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 27a8e354-da56-4fc9-a932-f10852a91a61
+
+	measure 'All orders' = CALCULATE([Total Orders],ALL('sales data'))
+		formatString: 0
+		lineageTag: 91f72210-76fe-4b4f-a4e1-a38ff9108cb4
+
+	measure 'Category % order' = DIVIDE([Total Orders],[All orders])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 96e55dbc-2cf3-4831-b0d7-14597a4ce9da
+
+	measure 'All returns' = CALCULATE([Total Returns],All('Returns Data'))
+		formatString: 0
+		lineageTag: 3e63ffd7-ba2c-4022-81fa-287dbdbe551f
+
+	measure 'Category % return' = DIVIDE([Total Returns],[All returns])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 9f77b6cf-86c1-4e0e-a86d-6494f18b291a
+
+	measure 'High Ticket Orders' = CALCULATE([Total Orders],FILTER('sales data','sales data'[Unit price]>=[Avg product price]))
+		formatString: 0
+		lineageTag: 9db26459-f0de-438c-a562-ecf8f7db533c
+
+	measure 'Avg product price' = AVERAGE('Product Lookup'[ProductPrice])
+		lineageTag: 2050e667-a4c3-49cf-bb46-9c6ed11a24e5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total revenue' = SUMX('sales data','sales data'[OrderQuantity]*'sales data'[Unit price])
+		lineageTag: 199aa5c0-056c-42c4-85d1-f8bb2478cbac
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Cost' = SUMX('sales data','sales data'[OrderQuantity] * RELATED('Product Lookup'[ProductCost]))
+		lineageTag: 80ce35f9-9938-4c4e-bf22-9190438e11f4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Profit' = [Total revenue] - [Total Cost]
+		lineageTag: 5122f5a1-d83c-4bb7-8cc5-7ee46ab81add
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Orders YTD' = CALCULATE([Total Orders],DATESYTD('Calendar Lookup'[Date]))
+		formatString: 0
+		lineageTag: c26c7184-062a-4fd9-93be-ce0c51b452b9
+
+	measure 'Previous month order' = CALCULATE([Total Orders],DATEADD('Calendar Lookup'[Date],-1,MONTH))
+		formatString: 0
+		lineageTag: 5ee296ef-325c-4850-a5ce-a936b4d22a84
+
+	measure 'last 10 Days order' = CALCULATE([Total Orders],DATESINPERIOD('Calendar Lookup'[Date],MAX('Calendar Lookup'[Date]),-10,DAY))
+		formatString: 0
+		lineageTag: b78bfa03-7777-4d09-ae00-303823f9da6d
+
+	measure 'Previous month return' = CALCULATE([Total Returns],DATEADD('Calendar Lookup'[Date],-1,MONTH))
+		formatString: 0
+		lineageTag: 1f9e4be3-f6a3-4b14-8697-9e5404836f99
+
+	measure 'Previous month profit' = CALCULATE([Total Profit],DATEADD('Calendar Lookup'[Date],-1,MONTH))
+		lineageTag: a94c649e-fce1-4880-a9d2-bf9e5b2f7f67
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Order target' = [Previous month order]*1.1
+		lineageTag: 879f11d2-5548-46d2-9c07-19c423bd68cc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'profit target' = [Previous month profit]*1.1
+		lineageTag: a37ebb9e-fe8c-42f1-9a8f-e54d64567c5e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure '30 day rolling profit' = CALCULATE([Total Profit],DATESINPERIOD('Calendar Lookup'[Date],MAX('Calendar Lookup'[Date]),-30,DAY))
+		lineageTag: 9e9bad0b-dea6-403d-8f22-78aab7284942
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Measures (2)' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

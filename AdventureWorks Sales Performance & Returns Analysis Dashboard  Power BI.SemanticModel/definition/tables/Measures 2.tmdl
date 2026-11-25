@@ -1,0 +1,50 @@
+table 'Measures 2'
+	lineageTag: 1cb60d94-f2f4-4859-a455-c5817db04e91
+
+	column Measures
+		lineageTag: dc9fcfa2-dff4-4b5a-81d6-907c21a057b3
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Measures Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Measures Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Measures Fields'
+		isHidden
+		lineageTag: e0f83db9-1d70-4508-bda0-9eebceab1033
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Measures Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Measures Order'
+		isHidden
+		formatString: 0
+		lineageTag: 19cd8ee5-dced-4d0e-a0a9-e6b2d512ff9a
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Measures 2' = calculated
+		mode: import
+		source =
+				{
+				    ("Total Orders", NAMEOF('Measures (2)'[Total Orders]), 0),
+				    ("Total revenue", NAMEOF('Measures (2)'[Total revenue]), 1),
+				    ("Return Rate", NAMEOF('Measures (2)'[Return Rate]), 2),
+				    ("Total Returns", NAMEOF('Measures (2)'[Total Returns]), 3)
+				}
+
+	annotation PBI_Id = 3d8795468b624e4198bb9d712db840ba
+

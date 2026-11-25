@@ -1,0 +1,166 @@
+table 'Calendar Lookup'
+	lineageTag: 085b6166-0a15-4398-addf-9eed2be26205
+
+	column Date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 228aa374-8bc1-40da-aaf9-b483b282c9e9
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: 1dac1d9b-eda7-41e1-a13a-ac23cb78693d
+			defaultHierarchy: LocalDateTable_4c98f964-b6d4-4129-b0e0-42e0efec6177.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 4caebe08-4b1c-410e-95ac-302098683137
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: c0adad4d-7ace-4309-a452-4bb132430f54
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Week'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 0c67f379-d725-4371-8b3f-1f254621f0f4
+		summarizeBy: none
+		sourceColumn: Start of Week
+
+		variation Variation
+			isDefault
+			relationship: d75e65f7-41db-446c-a944-1c9c86ed990f
+			defaultHierarchy: LocalDateTable_3789ac78-5c09-4d0c-a5d3-449ee99174bb.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Month number' =
+			SWITCH('Calendar Lookup'[Month Name],"January",1,
+			"Febuary",2,
+			"March",3,
+			"April",4,
+			"May",5,
+			"June",6,
+			"July",7,
+			"August",8,
+			"September",9,
+			"October",10,
+			"November",11,
+			"December",12,
+			0)
+		formatString: 0
+		lineageTag: c314a104-e519-4dae-b2a1-3e16fba2b587
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Short Name' = UPPER(LEFT('Calendar Lookup'[Month Name],3))
+		lineageTag: af58a543-6a43-4060-bcbc-27417a1c5bd5
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month num function' = MONTH('Calendar Lookup'[Date])
+		formatString: 0
+		lineageTag: dc0ed1d8-45c0-4815-83bd-5eb38ed44e13
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Current Date Time' = NOW()
+		formatString: General Date
+		lineageTag: 5dd6b92e-c99b-4dff-9d87-4251b6dd4f75
+		summarizeBy: none
+
+		variation Variation
+			isDefault
+			relationship: 3aed8e12-8358-4fb2-91e5-c86b8346e52f
+			defaultHierarchy: LocalDateTable_c53ef7f6-4237-41ca-b1a1-1c4b58ad9c17.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date diff' = DATEDIFF('Calendar Lookup'[Date],'Calendar Lookup'[Current Date Time],MONTH)
+		formatString: 0
+		lineageTag: e4ea4844-9f8d-4378-bab5-db1ac8925a4c
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Next Month last Date' = EOMONTH('Calendar Lookup'[Date],1)
+		formatString: General Date
+		lineageTag: d8ae927b-b6a7-48fb-9e58-9a65e195203c
+		summarizeBy: none
+
+		variation Variation
+			isDefault
+			relationship: d0db4e4b-e51e-4b76-8815-6c3974162cfb
+			defaultHierarchy: LocalDateTable_8277d52f-5630-48c6-a236-2f88b55e5706.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of month' = STARTOFMONTH('Calendar Lookup'[Date])
+		formatString: dd/mm/yyyy
+		lineageTag: 1a7993ba-3e1d-4d71-b065-4048e3bf5128
+		summarizeBy: none
+
+		variation Variation
+			isDefault
+			relationship: 225adf8e-26ef-4d51-9342-4638f53435de
+			defaultHierarchy: LocalDateTable_1a9c51d7-dac3-4784-bf1f-85abfd8fc0f5.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	hierarchy 'Year Hierarchy'
+		lineageTag: b4a19ac9-d385-4b6d-b2e8-adafdaed6d15
+
+		level Year
+			lineageTag: 8a909601-a425-4707-9ef7-d0e492b70ce5
+			column: Year
+
+		level 'Start of month'
+			lineageTag: 192ea7a9-a36e-4e79-ba26-367eeb44090c
+			column: 'Start of month'
+
+		level 'Start of Week'
+			lineageTag: 0363a070-3b3e-44d8-8852-f6c67ba5334d
+			column: 'Start of Week'
+
+	partition 'Calendar Lookup' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("D:\Power BI dataset\Adventure works dataset\Power BI data Adventure works\AdventureWorks Calendar Lookup.csv"),[Delimiter=",", Columns=1, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Date", type date}}),
+				    #"Inserted Year" = Table.AddColumn(#"Changed Type", "Year", each Date.Year([Date]), Int64.Type),
+				    #"Inserted Month Name" = Table.AddColumn(#"Inserted Year", "Month Name", each Date.MonthName([Date]), type text),
+				    #"Inserted Start of Week" = Table.AddColumn(#"Inserted Month Name", "Start of Week", each Date.StartOfWeek([Date]), type date)
+				in
+				    #"Inserted Start of Week"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

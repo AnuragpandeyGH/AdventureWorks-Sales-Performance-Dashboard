@@ -1,0 +1,100 @@
+table Uk_Sales_data
+	lineageTag: fe817a39-5294-4814-9d90-0a8f49ce6ca6
+
+	column OrderDate
+		formatString: General Date
+		lineageTag: fdb7baa6-d7d2-442b-989c-22f04c195bea
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: sales data[OrderDate]
+
+		variation Variation
+			isDefault
+			relationship: 67a5fafb-3772-470f-9cb4-1f40ca4612ee
+			defaultHierarchy: LocalDateTable_3bcdc438-4c89-46be-a5e9-91d0440a16e6.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column StockDate
+		formatString: General Date
+		lineageTag: 00cd6b90-e58b-4a60-a143-e2c5cc979e88
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: sales data[StockDate]
+
+		variation Variation
+			isDefault
+			relationship: b252b55a-91f7-46a8-b90b-fab12571937a
+			defaultHierarchy: LocalDateTable_1e73715a-f16f-4c0b-b50a-7db67e228230.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderNumber
+		lineageTag: 3a6c2f2a-19cc-45b9-aa24-efff92e8d4c2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: sales data[OrderNumber]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductKey
+		formatString: 0
+		lineageTag: 99713a80-073f-466a-8475-13aee1244fb2
+		summarizeBy: count
+		isNameInferred
+		sourceColumn: sales data[ProductKey]
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerKey
+		formatString: 0
+		lineageTag: 609ff0e2-2af5-464a-a8b1-10d38bd12532
+		summarizeBy: count
+		isNameInferred
+		sourceColumn: sales data[CustomerKey]
+
+		annotation SummarizationSetBy = Automatic
+
+	column TerritoryKey
+		formatString: 0
+		lineageTag: b2156b85-8866-441a-abc9-ed6ec4297eea
+		summarizeBy: count
+		isNameInferred
+		sourceColumn: sales data[TerritoryKey]
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderLineItem
+		formatString: 0
+		lineageTag: 8a2b498c-e264-4dcb-bb2e-0e58cb07eeb2
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: sales data[OrderLineItem]
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderQuantity
+		formatString: 0
+		lineageTag: 303b3dde-69e1-4cfe-8401-0252ffcd3b22
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: sales data[OrderQuantity]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Unit price'
+		lineageTag: 5c89a87d-8c41-4a00-8ee1-59d7fd68855a
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: sales data[Unit price]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Uk_Sales_data = calculated
+		mode: import
+		source = FILTER('sales data','sales data'[TerritoryKey]==10)
+
+	annotation PBI_Id = 406e4f36e702459db1af2079c86d365a
+

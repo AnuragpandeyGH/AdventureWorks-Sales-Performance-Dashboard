@@ -1,0 +1,23 @@
+table 'sample dates'
+	lineageTag: 1d3fd7d8-aae9-470d-a6f3-e130420b86ce
+
+	column Date
+		formatString: General Date
+		lineageTag: d8ff736b-bb7e-4851-9702-51cd18138f3d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Calendar Lookup[Date]
+
+		variation Variation
+			isDefault
+			relationship: 01e86ccf-39d7-4f83-a111-b9f8c2e0142c
+			defaultHierarchy: LocalDateTable_d753aa8a-efe3-49e6-afea-79151ef5e474.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'sample dates' = calculated
+		mode: import
+		source = DATESINPERIOD('Calendar Lookup'[Date],DATE(2020,1,1),10,DAY)
+
+	annotation PBI_Id = 54cf58abf8a846a69402393ca11037ac
+

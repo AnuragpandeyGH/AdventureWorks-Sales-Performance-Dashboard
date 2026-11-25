@@ -1,0 +1,48 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup 'Transform File from sales data'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 'Transform File from sales data\Helper Queries'
+
+	annotation PBI_QueryGroupOrder = 0
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["Calendar Lookup","Customer Lookup","Product Categories Lookup","Product Lookup","Product Subcategories Lookup","Returns Data","Territory Lookup","Product Category Sales (Unpivot Demo)","sales data","Sample File","Parameter1","Transform Sample File","Transform File","Measures (2)"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table 'Calendar Lookup'
+ref table DateTableTemplate_fd158987-be6b-4a9c-a7d6-51541001c51b
+ref table LocalDateTable_4c98f964-b6d4-4129-b0e0-42e0efec6177
+ref table LocalDateTable_3789ac78-5c09-4d0c-a5d3-449ee99174bb
+ref table 'Customer Lookup'
+ref table LocalDateTable_6d2e6c07-19fd-4cbc-8ace-94d14cea45a1
+ref table 'Product Categories Lookup'
+ref table 'Product Lookup'
+ref table 'Product Subcategories Lookup'
+ref table 'Returns Data'
+ref table 'Territory Lookup'
+ref table 'sales data'
+ref table LocalDateTable_c6a95f12-e630-43bc-b42e-c60d8062d8e6
+ref table 'Measures (2)'
+ref table LocalDateTable_c53ef7f6-4237-41ca-b1a1-1c4b58ad9c17
+ref table LocalDateTable_8277d52f-5630-48c6-a236-2f88b55e5706
+ref table LocalDateTable_1a9c51d7-dac3-4784-bf1f-85abfd8fc0f5
+ref table Uk_Sales_data
+ref table LocalDateTable_3bcdc438-4c89-46be-a5e9-91d0440a16e6
+ref table LocalDateTable_1e73715a-f16f-4c0b-b50a-7db67e228230
+ref table 'sample dates'
+ref table LocalDateTable_d753aa8a-efe3-49e6-afea-79151ef5e474
+ref table 'Measures 2'
+
+ref cultureInfo en-US
+

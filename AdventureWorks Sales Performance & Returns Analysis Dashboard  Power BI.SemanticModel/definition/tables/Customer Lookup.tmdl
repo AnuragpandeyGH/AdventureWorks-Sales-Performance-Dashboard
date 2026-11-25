@@ -1,0 +1,176 @@
+table 'Customer Lookup'
+	lineageTag: 6a05142b-9f32-4897-ba27-22d9285dad0f
+
+	column CustomerKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 97039f2a-d229-4351-b43f-3e8737f5238a
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Prefix
+		dataType: string
+		lineageTag: 5aa821b0-bff4-4cac-92a9-72434407ffad
+		summarizeBy: none
+		sourceColumn: Prefix
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstName
+		dataType: string
+		lineageTag: 101ef323-2571-4e1b-b3b8-7ba6e1655abb
+		summarizeBy: none
+		sourceColumn: FirstName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastName
+		dataType: string
+		lineageTag: 850add1a-784f-4480-983c-f1b7507ccae1
+		summarizeBy: none
+		sourceColumn: LastName
+
+		annotation SummarizationSetBy = Automatic
+
+	column BirthDate
+		dataType: dateTime
+		formatString: d mmmm\, yyyy
+		lineageTag: 2a3cad13-085b-4214-9446-a64ecbccf0d4
+		summarizeBy: none
+		sourceColumn: BirthDate
+
+		variation Variation
+			isDefault
+			relationship: 263df90c-5257-442f-a54d-4ab610b163f8
+			defaultHierarchy: LocalDateTable_6d2e6c07-19fd-4cbc-8ace-94d14cea45a1.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column MaritalStatus
+		dataType: string
+		lineageTag: e53ce774-e531-4ace-a6d0-e4c55606354e
+		summarizeBy: none
+		sourceColumn: MaritalStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: 3cc8d44b-d7fb-406a-aa26-4ad31196090d
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmailAddress
+		dataType: string
+		lineageTag: 4545200a-1799-4eac-8790-6d06c3514e26
+		summarizeBy: none
+		sourceColumn: EmailAddress
+
+		annotation SummarizationSetBy = Automatic
+
+	column AnnualIncome
+		dataType: int64
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: c21d631f-37a1-44bd-b6a8-dd6f8bde1f63
+		summarizeBy: sum
+		sourceColumn: AnnualIncome
+
+		annotation SummarizationSetBy = Automatic
+
+	column TotalChildren
+		dataType: int64
+		formatString: 0
+		lineageTag: 824994ec-9d63-4efc-acb1-7e1709747fc5
+		summarizeBy: sum
+		sourceColumn: TotalChildren
+
+		annotation SummarizationSetBy = Automatic
+
+	column EducationLevel
+		dataType: string
+		lineageTag: 054f94d6-016e-4813-ae97-7bfaa130605a
+		summarizeBy: none
+		sourceColumn: EducationLevel
+
+		annotation SummarizationSetBy = Automatic
+
+	column Occupation
+		dataType: string
+		lineageTag: a12ff224-4451-442d-abc8-f19ba863aa50
+		summarizeBy: none
+		sourceColumn: Occupation
+
+		annotation SummarizationSetBy = Automatic
+
+	column HomeOwner
+		dataType: string
+		lineageTag: ce604e5b-a1dd-4eb8-9218-246d9f30de0a
+		summarizeBy: none
+		sourceColumn: HomeOwner
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parent Status' = IF('Customer Lookup'[TotalChildren]=0,"No","Yes")
+		lineageTag: 400689e0-b92f-4422-b965-894346d04376
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Priority' = IF(('Customer Lookup'[Parent Status]== "Yes") && ('Customer Lookup'[AnnualIncome] >=100000),"Priority","Standard")
+		lineageTag: 2773f4fe-e00c-4f7f-8031-5d5d059948e9
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Income level' = ```
+			IF('Customer Lookup'[AnnualIncome]>=150000,"Very high",
+			IF('Customer Lookup'[AnnualIncome]>=100000,"High",
+			IF('Customer Lookup'[AnnualIncome]>50000,"Average",
+			"Low")))
+			
+			```
+		lineageTag: 600d6ba2-eee5-4fc9-9645-39dfd6fe319b
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Education Category' =
+			SWITCH(TRUE(), 'Customer Lookup'[EducationLevel] in {"Partial College","Bachelors"},"UG",
+			'Customer Lookup'[EducationLevel] in {"High School", "Partial High School"},"High School","PG")
+		lineageTag: 634d16d8-2bb0-48b9-a6ea-460e63f02b78
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Birth Year' = YEAR('Customer Lookup'[BirthDate])
+		formatString: 0
+		lineageTag: 3f016226-d9fe-4c1d-b1b9-48879c14ec43
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Customer Lookup' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("D:\Power BI dataset\Adventure works dataset\Power BI data Adventure works\AdventureWorks Customer Lookup.csv"),[Delimiter=",", Columns=13, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"CustomerKey", Int64.Type}, {"Prefix", type text}, {"FirstName", type text}, {"LastName", type text}, {"BirthDate", type date}, {"MaritalStatus", type text}, {"Gender", type text}, {"EmailAddress", type text}, {"AnnualIncome", Int64.Type}, {"TotalChildren", Int64.Type}, {"EducationLevel", type text}, {"Occupation", type text}, {"HomeOwner", type text}}),
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Changed Type", {"CustomerKey", "Prefix", "FirstName", "LastName", "BirthDate", "MaritalStatus", "Gender", "EmailAddress", "AnnualIncome", "TotalChildren", "EducationLevel", "Occupation", "HomeOwner"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Errors"),
+				    #"Removed Blank Rows" = Table.SelectRows(#"Removed Duplicates", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null})))
+				in
+				    #"Removed Blank Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
